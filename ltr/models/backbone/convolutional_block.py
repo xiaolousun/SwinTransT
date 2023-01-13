@@ -68,9 +68,59 @@ class DepthwiseConvBlock(nn.Module):
         out = out + residual
         return out
 
+class DepthwiseBigkernelConvBlock(nn.Module):
+    '''Depthwise conv + Pointwise conv'''
+    def __init__(self, in_planes, out_planes, stride=1):
+        super(DepthwiseBigkernelConvBlock, self).__init__()
+        self.conv1 = nn.Conv2d\
+            (in_planes, in_planes, kernel_size=7, stride=stride, 
+             padding=3, groups=in_planes, bias=False)
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.conv2 = nn.Conv2d\
+            (in_planes, out_planes, kernel_size=1, 
+            stride=1, padding=0, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_planes)
+
+    def forward(self, x):
+        residual = x
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        out = out + residual
+        return out
+
+class DepthwiseConvCBAM_Block(nn.Module):
+    '''Depthwise conv + Pointwise conv'''
+    def __init__(self, in_planes, out_planes, stride=1):
+        super(DepthwiseConvCBAM_Block, self).__init__()
+        self.conv1 = nn.Conv2d\
+            (in_planes, in_planes, kernel_size=3, stride=stride, 
+             padding=1, groups=in_planes, bias=False)
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.conv2 = nn.Conv2d\
+            (in_planes, out_planes, kernel_size=1, 
+            stride=1, padding=0, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_planes)
+
+        self.cbam = CBAM(out_planes)
+
+    def forward(self, x):
+        residual = x
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        out = self.cbam(out)
+        out = out + residual
+        out = F.relu(out)
+        return out
+
 
 def build_CBAM_network(dim):
     return CBAM(channel=dim)
 
 def build_DwConv_Block(in_planes, out_planes, stride=1):
     return DepthwiseConvBlock(in_planes, out_planes, stride=stride)
+
+def build_DwConv_CBAM_Block(in_planes, out_planes, stride=1):
+    return DepthwiseConvCBAM_Block(in_planes, out_planes, stride=stride)
+
+def build_DwConv_Bigkernel_Block(in_planes, out_planes, stride=1):
+    return DepthwiseBigkernelConvBlock(in_planes, out_planes, stride=stride)

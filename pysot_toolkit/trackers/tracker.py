@@ -106,7 +106,7 @@ class Tracker(object):
 
     def initialize(self, image, info: dict) -> dict:
         tic = time.time()
-        hanning = np.hanning(32)
+        hanning = np.hanning(16)
         window = np.outer(hanning, hanning)
         self.window = window.flatten()
         # Initialize

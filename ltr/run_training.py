@@ -47,7 +47,9 @@ def main():
                         default='transt',
                         type=str, help='Name of module in the "train_settings/" folder.')
     parser.add_argument('--train_name', 
-                        default='swin_transt',
+                        # default='swin_transt',
+                        # default='swin_transt_cbam',
+                        default='swin_transt_bigkernel',
                         # default='transt',
                         type=str, help='Name of the train settings file.')
     parser.add_argument('--cudnn_benchmark', type=bool, default=True, help='Set cudnn benchmark on (1) or off (0) (default is on).')
