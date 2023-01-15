@@ -30,7 +30,7 @@ parser.add_argument('--video', default='', type=str,
         help='eval one special video')
 parser.add_argument('--vis', action='store_true',
         help='whether visualzie result')
-parser.add_argument('--name', default='SwinTransT_ep0085', type=str,
+parser.add_argument('--name', default='SwinTransT_ep0341', type=str,
         help='name of results')
 args = parser.parse_args()
 
@@ -40,11 +40,12 @@ def main():
     # load config
 
     dataset_root = '/data/full_data/test' #Absolute path of the dataset
-    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT/checkpoints/SwinTransT_ep0085.pth.tar' #Absolute path of the model
+    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT/checkpoints/SwinTransT_ep0341.pth.tar' #Absolute path of the model
+    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_BigKernel/checkpoints/ltr/transt/swin_transt_bigkernel/SwinTransT_ep0050.pth.tar' #Absolute path of the model
 
     # create model
     net = NetWithBackbone(net_path=net_path, use_gpu=True)
-    tracker = Tracker(name='swintranst_epoch_85', net=net, window_penalty=0.49, exemplar_size=128, instance_size=256)
+    tracker = Tracker(name='swintranst_epoch_132', net=net, window_penalty=0.49, exemplar_size=128, instance_size=256)
 
     # create dataset
     dataset = DatasetFactory.create_dataset(name=args.dataset,

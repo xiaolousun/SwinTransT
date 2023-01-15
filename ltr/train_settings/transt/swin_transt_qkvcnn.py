@@ -2,7 +2,7 @@ import torch
 from ltr.dataset import Lasot, MSCOCOSeq, Got10k, TrackingNet
 from ltr.data import processing, sampler, LTRLoader
 # import ltr.models.tracking.transt as transt_models
-import ltr.models.tracking.swin_transt as swintranst_models
+import ltr.models.tracking.swin_transt_qkvcnn as swintranst_models
 from ltr import actors
 from ltr.trainers import LTRTrainer
 import ltr.data.transforms as tfm
@@ -13,8 +13,8 @@ def run(settings):
     # Most common settings are assigned in the settings struct
     settings.device = 'cuda'
     settings.description = 'TransT with default settings.'
-    settings.batch_size = 8
-    settings.num_workers = 0
+    settings.batch_size = 16
+    settings.num_workers = 4
     settings.multi_gpu = True
     settings.print_interval = 1
     settings.normalize_mean = [0.485, 0.456, 0.406]
@@ -39,7 +39,7 @@ def run(settings):
     settings.dim_feedforward = 2048
     settings.featurefusion_layers = 4
 
-    settings.env.workspace_dir = '/home/xlsun/xlsun/code/TransT/results/SwinTransT'
+    settings.env.workspace_dir = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt2'
     settings.env.tensorboard_dir = settings.env.workspace_dir + '/tensorboard/'
     settings.logdir = settings.env.workspace_dir + '/logs/'
 
