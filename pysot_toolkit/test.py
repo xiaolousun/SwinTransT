@@ -24,13 +24,19 @@ from pysot_toolkit.trackers.tracker import Tracker
 from pysot_toolkit.trackers.net_wrappers import NetWithBackbone
 
 parser = argparse.ArgumentParser(description='transt tracking')
-parser.add_argument('--dataset', type=str, default='GOT-10k',
+parser.add_argument('--dataset', type=str, 
+        # default='GOT-10k',
+        default='OTB100',
         help='datasets')
 parser.add_argument('--video', default='', type=str,
         help='eval one special video')
 parser.add_argument('--vis', action='store_true',
         help='whether visualzie result')
-parser.add_argument('--name', default='SwinTransT_ep0341', type=str,
+parser.add_argument('--name', 
+                    # default='SwinTransT_qkvcnn_encoderfusion_ep0500', 
+                    # default='SwinTransT_ep0500',
+                    default='SwinTransT_qkvcnn_encoderfusion_biglr_ep0500',
+                    type=str,
         help='name of results')
 args = parser.parse_args()
 
@@ -39,9 +45,11 @@ torch.set_num_threads(1)
 def main():
     # load config
 
-    dataset_root = '/data/full_data/test' #Absolute path of the dataset
-    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT/checkpoints/SwinTransT_ep0341.pth.tar' #Absolute path of the model
-    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_BigKernel/checkpoints/ltr/transt/swin_transt_bigkernel/SwinTransT_ep0050.pth.tar' #Absolute path of the model
+    # dataset_root = '/data/full_data/test' #Absolute path of the dataset
+    dataset_root = '/data/OTB100'
+    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT/checkpoints/SwinTransT_ep0500.pth.tar' #Absolute path of the model
+    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3/checkpoints/ltr/transt/swin_transt_qkvcnn_encoderfusion/SwinTransT_ep0500.pth.tar' #Absolute path of the model
+    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_cvt_biglr/SwinTransT_ep0500.pth.tar' #Absolute path of the model
 
     # create model
     net = NetWithBackbone(net_path=net_path, use_gpu=True)

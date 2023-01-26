@@ -19,13 +19,13 @@ from pysot_toolkit.toolkit.evaluation import OPEBenchmark, AccuracyRobustnessBen
 from pysot_toolkit.toolkit.visualization import draw_success_precision
 import numpy as np
 parser = argparse.ArgumentParser(description='transt evaluation')
-parser.add_argument('--tracker_path', '-p', type=str, default='',
+parser.add_argument('--tracker_path', '-p', type=str, default='results/',
                     help='tracker result path')
-parser.add_argument('--dataset', '-d', type=str, default='LaSOT',
+parser.add_argument('--dataset', '-d', type=str, default='OTB100',
                     help='dataset name')
 parser.add_argument('--num', '-n', default=1, type=int,
                     help='number of thread to eval')
-parser.add_argument('--tracker_prefix', '-t', default='',
+parser.add_argument('--tracker_prefix', '-t', default='SwinTransT',
                     type=str, help='tracker name')
 parser.add_argument('--show_video_level', '-s', dest='show_video_level',
                     action='store_true')
@@ -44,9 +44,10 @@ def main():
     assert len(trackers) > 0
     args.num = min(args.num, len(trackers))
 
-    root = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                         'testing_dataset'))
-    root = os.path.join(root, args.dataset)
+    # root = os.path.realpath(os.path.join(os.path.dirname(__file__),
+    #                                      'testing_dataset'))
+    # root = os.path.join(root, args.dataset)
+    root = '/data/OTB100'
     if 'OTB' in args.dataset:
         dataset = OTBDataset(args.dataset, root)
         dataset.set_tracker(tracker_dir, trackers)

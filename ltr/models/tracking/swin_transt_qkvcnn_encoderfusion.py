@@ -76,7 +76,7 @@ class SwinTransT(nn.Module):
         src_template, mask_template = feature_template[-1].decompose()
         assert mask_template is not None
         _, hs = self.featurefusion_network(self.input_proj(src_template), mask_template, self.input_proj(src_search), mask_search, pos_template[-1], pos_search[-1])
-        hs = hs.flatten(2).permute(0, 2, 1)
+        hs = hs.flatten(2).permute(0, 2, 1).unsqueeze(0)
 
         # import matplotlib.pyplot as plt
         # import os
