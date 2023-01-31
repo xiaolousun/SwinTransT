@@ -25,8 +25,8 @@ from pysot_toolkit.trackers.net_wrappers import NetWithBackbone
 
 parser = argparse.ArgumentParser(description='transt tracking')
 parser.add_argument('--dataset', type=str, 
-        # default='GOT-10k',
-        default='OTB100',
+        default='GOT-10k',
+        # default='OTB100',
         help='datasets')
 parser.add_argument('--video', default='', type=str,
         help='eval one special video')
@@ -35,7 +35,8 @@ parser.add_argument('--vis', action='store_true',
 parser.add_argument('--name', 
                     # default='SwinTransT_qkvcnn_encoderfusion_ep0500', 
                     # default='SwinTransT_ep0500',
-                    default='SwinTransT_qkvcnn_encoderfusion_biglr_ep0500',
+                    # default='SwinTransT_qkvcnn_encoderfusion_biglr_ep0500',
+                    default='SwinTransT_qkvcnn_encoderfusion_coslr_ep0500',
                     type=str,
         help='name of results')
 args = parser.parse_args()
@@ -45,11 +46,12 @@ torch.set_num_threads(1)
 def main():
     # load config
 
-    # dataset_root = '/data/full_data/test' #Absolute path of the dataset
-    dataset_root = '/data/OTB100'
+    dataset_root = '/data/full_data/test' #Absolute path of the dataset
+    # dataset_root = '/data/OTB100'
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT/checkpoints/SwinTransT_ep0500.pth.tar' #Absolute path of the model
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3/checkpoints/ltr/transt/swin_transt_qkvcnn_encoderfusion/SwinTransT_ep0500.pth.tar' #Absolute path of the model
-    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_cvt_biglr/SwinTransT_ep0500.pth.tar' #Absolute path of the model
+    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_cvt_biglr/SwinTransT_ep0500.pth.tar' #Absolute path of the model
+    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3_coslr/checkpoints/ltr/transt/swin_transt_qkvcnn_encoderfusion_coslr/SwinTransT_ep0500.pth.tar' #Absolute path of the model
 
     # create model
     net = NetWithBackbone(net_path=net_path, use_gpu=True)
