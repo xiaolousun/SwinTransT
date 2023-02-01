@@ -6,3 +6,4 @@ from .swin_transformer_bigkernel import SwinTransformer_Bigkernel
 from .swin_transformer_diffcnn import SwinTransformer_diffcnn
 from .swin_transformer_qkvcnn import SwinTransformer_cvt
 from .swin_transformer_qkvcnn_diffcnn import SwinTransformer_cvt_diffcnn
+from .swin_transformer_qkvcnn_clean import SwinTransformer_cvt_clean

@@ -195,6 +195,80 @@ class Transformer(nn.Module):
 
         return memory_temp, memory_search
 
+class Transformer_withoutdwconv(nn.Module):
+
+    def __init__(self, d_model=512, nhead=8, num_encoder_layers=6,
+                 dim_feedforward=2048, dropout=0.1,
+                 activation="relu", normalize_before=False, divide_norm=False):
+        super().__init__()
+        self.dim = d_model
+
+        # self.dwconv_block_template = build_DwConv_Block(in_planes=self.dim, out_planes=self.dim)
+        # self.dwconv_block_search = build_DwConv_Block(in_planes=self.dim, out_planes=self.dim)
+
+        encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward,
+                                                dropout, activation, normalize_before, divide_norm=divide_norm)
+        encoder_norm = nn.LayerNorm(d_model) if normalize_before else None
+
+        if num_encoder_layers == 0:
+            self.encoder = None
+        else:
+            self.encoder = TransformerEncoder(encoder_layer, num_encoder_layers, encoder_norm)
+
+        self._reset_parameters()
+
+        self.d_model = d_model
+        self.nhead = nhead
+        self.d_feed = dim_feedforward
+        # 2021.1.7 Try dividing norm to avoid NAN
+        self.divide_norm = divide_norm
+        self.scale_factor = float(d_model // nhead) ** 0.5
+
+    def _reset_parameters(self):
+        for p in self.parameters():
+            if p.dim() > 1:
+                nn.init.xavier_uniform_(p)
+
+    def forward(self, src_temp, mask_temp, src_search, mask_search, pos_temp, pos_search, mode="encoder"):
+        """
+
+        :param feat: (H1W1+H2W2, bs, C)
+        :param mask: (bs, H1W1+H2W2)
+        :param query_embed: (N, C) or (N, B, C)
+        :param pos_embed: (H1W1+H2W2, bs, C)
+        :param mode: run the whole transformer or encoder only
+        :param return_encoder_output: whether to return the output of encoder (together with decoder)
+        :return:
+        """
+        
+        B, C, H_t, W_t = src_temp.shape
+        _, _, H_s, W_s = src_search.shape
+
+        # src_temp = self.dwconv_block_search(src_temp)
+        # src_search = self.dwconv_block_template(src_search)
+
+        src_temp = src_temp.flatten(2).permute(2, 0, 1)
+        pos_temp = pos_temp.flatten(2).permute(2, 0, 1)
+        src_search = src_search.flatten(2).permute(2, 0, 1)
+        pos_search = pos_search.flatten(2).permute(2, 0, 1)
+        mask_temp = mask_temp.flatten(1)
+        mask_search = mask_search.flatten(1)
+
+        feat = torch.cat([src_temp, src_search], dim=0)
+        mask = torch.cat([mask_temp, mask_search], dim=1)
+        pos_embed = torch.cat([pos_temp, pos_search], dim=0)
+
+        assert mode in ["all", "encoder"]
+        if self.encoder is None:
+            memory = feat
+        else:
+            memory = self.encoder(feat, src_key_padding_mask=mask, pos=pos_embed)
+
+        memory_temp, memory_search = torch.split(memory, [H_t*W_t, H_s*W_s], dim=0)
+        memory_temp, memory_search = memory_temp.permute(1, 2, 0).reshape(B, C, H_t, W_t), memory_search.permute(1, 2, 0).reshape(B, C, H_s, W_s)
+
+        return memory_temp, memory_search
+
 
 def _get_clones(module, N):
     return nn.ModuleList([copy.deepcopy(module) for i in range(N)])
@@ -202,6 +276,15 @@ def _get_clones(module, N):
 
 def build_encoder_featurefusion_network(params, settings, output_layer):
     return Transformer(
+        d_model=params['embed_dim'] * 2 ** (output_layer),
+        dropout=0.1,
+        nhead=params['num_heads'][-1], 
+        dim_feedforward=(params['embed_dim'] * 2 ** (output_layer))*4,
+        num_encoder_layers=params["depths"][-1]
+    )
+
+def build_encoder_featurefusion_withoutdwconv_network(params, settings, output_layer):
+    return Transformer_withoutdwconv(
         d_model=params['embed_dim'] * 2 ** (output_layer),
         dropout=0.1,
         nhead=params['num_heads'][-1], 
