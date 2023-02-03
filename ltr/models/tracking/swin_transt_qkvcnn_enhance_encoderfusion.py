@@ -11,12 +11,12 @@ from util.misc import (NestedTensor, nested_tensor_from_tensor,
 from ltr.models.backbone.swin_transt_backbone import build_swin_transformer_cvt_clean_backbone
 from ltr.models.loss.matcher import build_matcher
 # from ltr.models.neck.featurefusion_network import build_featurefusion_network
-from ltr.models.neck.encoder_featurefusion_network import build_dwconv_encoder_featurefusion_network, build_encoder_featurefusion_withoutdwconv_network
+from ltr.models.neck.encoder_featurefusion_network import build_encoder_featurefusion_network, build_backbone_enhance_network
 
 
 class SwinTransT(nn.Module):
     """ This is the TransT module that performs single object tracking """
-    def __init__(self, backbone, featurefusion_network, num_classes):
+    def __init__(self, backbone, backbone_enhance ,featurefusion_network, num_classes):
         """ Initializes the model.
         Parameters:
             backbone: torch module of the backbone to be used. See transt_backbone.py
@@ -29,8 +29,9 @@ class SwinTransT(nn.Module):
         hidden_dim = featurefusion_network.d_model
         self.class_embed = MLP(hidden_dim, hidden_dim, num_classes + 1, 3)
         self.bbox_embed = MLP(hidden_dim, hidden_dim, 4, 3)
-        # self.input_proj = nn.Conv2d(backbone.num_channels, hidden_dim, kernel_size=1)
+        self.input_proj = nn.Conv2d(backbone.num_channels, hidden_dim, kernel_size=1)
         self.backbone = backbone
+        self.backbone_enhance = backbone_enhance
 
     def forward(self, search, template):
         """ The forward expects a NestedTensor, which consists of:
@@ -57,8 +58,9 @@ class SwinTransT(nn.Module):
         assert mask_search is not None
         src_template, mask_template = feature_template[-1].decompose() # B C H W
         assert mask_template is not None
-        # _, hs = self.featurefusion_network(self.input_proj(src_template), mask_template, self.input_proj(src_search), mask_search, pos_template[-1], pos_search[-1])
-        _, hs = self.featurefusion_network(src_template, mask_template, src_search, mask_search, pos_template[-1], pos_search[-1])
+        src_search = self.backbone_enhance(src_search, mask_search, pos_search[-1])
+        src_template = self.backbone_enhance(src_template, mask_template, pos_template[-1])
+        _, hs = self.featurefusion_network(self.input_proj(src_template), mask_template, self.input_proj(src_search), mask_search, pos_template[-1], pos_search[-1])
         hs = hs.flatten(2).permute(0, 2, 1).unsqueeze(0)
 
         outputs_class = self.class_embed(hs)
@@ -76,8 +78,9 @@ class SwinTransT(nn.Module):
         assert mask_search is not None
         src_template, mask_template = feature_template[-1].decompose()
         assert mask_template is not None
-        # _, hs = self.featurefusion_network(self.input_proj(src_template), mask_template, self.input_proj(src_search), mask_search, pos_template[-1], pos_search[-1])
-        _, hs = self.featurefusion_network(src_template, mask_template, src_search, mask_search, pos_template[-1], pos_search[-1])
+        src_search = self.backbone_enhance(src_search, mask_search, pos_search)
+        src_template = self.backbone_enhance(src_template, mask_template, pos_template)
+        _, hs = self.featurefusion_network(self.input_proj(src_template), mask_template, self.input_proj(src_search), mask_search, pos_template[-1], pos_search[-1])
         hs = hs.flatten(2).permute(0, 2, 1).unsqueeze(0)
 
         # import matplotlib.pyplot as plt
@@ -246,9 +249,11 @@ def transt_swintranst(settings):
     params = copy.deepcopy(_cfg[name]['params'])
     
     backbone_net, output_layer = build_swin_transformer_cvt_clean_backbone(settings, name, output_layers=(2,), load_pretrained=False)
-    featurefusion_network = build_dwconv_encoder_featurefusion_network(params, settings, output_layer)
+    backbone_net_enhance = build_backbone_enhance_network(params, settings, output_layer)
+    featurefusion_network = build_encoder_featurefusion_network(params, settings, output_layer)
     model = SwinTransT(
         backbone_net,
+        backbone_net_enhance,
         featurefusion_network,
         num_classes=num_classes
     )

@@ -54,6 +54,7 @@ def main():
                         # default='swin_transt_qkvcnn_encoderfusion',
                         # default='swin_transt_qkvcnn_encoderfusion_coslr',
                         # default='swin_transt_qkvcnn_diffcnn_encoderfusion',
+                        # default='swin_transt_qkvcnn_enhance_encoderfusion',
                         default='swin_transt_qkvcnn_encoderfusion_withoutconv',
                         # default='transt',
                         type=str, help='Name of the train settings file.')
