@@ -38,7 +38,7 @@ parser.add_argument('--name',
                     # default='SwinTransT_qkvcnn_encoderfusion_biglr_ep0050',
                     # default='SwinTransT_qkvcnn_encoderfusion_coslr_ep0583',
                     # default='SwinTransT_qkvcnn_encoderfusion_diffcnn_ep0132_test',
-                    default='SwinTransT_qkvcnn_encoderfusion_withoutconv_and_conv1_ep0050',
+                    default='SwinTransT_qkvcnn_dwconv_encoderfusion_ep0015',
                     # default='SwinTransT_qkvcnn_encoderfusion_withoutconv_ep0050_transfer',
                     type=str,
         help='name of results')
@@ -56,7 +56,8 @@ def main():
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_cvt_biglr/SwinTransT_ep0050.pth.tar' #Absolute path of the model
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3_coslr/checkpoints/ltr/transt/swin_transt_qkvcnn_encoderfusion_coslr/SwinTransT_ep0583.pth.tar' #Absolute path of the model
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt_diffcnn/checkpoints/SwinTransT_ep0132.pth.tar' #Absolute path of the model
-    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3_withoutconv_and_conv1/SwinTransT_ep0050.pth.tar'
+    # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3_withoutconv_and_conv1/SwinTransT_ep0050.pth.tar'
+    net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_qkvcnn_dwconv_encoderfusion/SwinTransT_ep0015.pth.tar'
     # net_path = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt3_transfer/SwinTransT_cvt3_encoderfusioin_transfer2_ep0050.pth'
 
 

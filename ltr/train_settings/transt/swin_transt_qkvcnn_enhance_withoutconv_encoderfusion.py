@@ -2,7 +2,7 @@ import torch
 from ltr.dataset import Lasot, MSCOCOSeq, Got10k, TrackingNet
 from ltr.data import processing, sampler, LTRLoader
 # import ltr.models.tracking.transt as transt_models
-import ltr.models.tracking.swin_transt_qkvcnn_enhance_encoderfusion as swintranst_models
+import ltr.models.tracking.swin_transt_qkvcnn_enhance_withoutconv_encoderfusion as swintranst_models
 from ltr import actors
 from ltr.trainers import LTRTrainer
 import ltr.data.transforms as tfm
@@ -39,7 +39,7 @@ def run(settings):
     settings.dim_feedforward = 2048
     settings.featurefusion_layers = 4
 
-    settings.env.workspace_dir = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt_enhance'
+    settings.env.workspace_dir = '/home/xlsun/xlsun/code/TransT/results/SwinTransT_Cvt_enhance_withoutconv'
     settings.env.tensorboard_dir = settings.env.workspace_dir + '/tensorboard/'
     settings.logdir = settings.env.workspace_dir + '/logs/'
 
